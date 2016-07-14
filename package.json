@@ -1,0 +1,22 @@
+{
+  "name": "mqtt-nodemotion",
+  "version": "1.0.0",
+  "description": "Read data from a HC-SR501 PIR motion sensor and send it to a MQTT broker in Node.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RandomByte/mqtt-nodemotion.git"
+  },
+  "author": "Merlin Beutlberger",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/RandomByte/mqtt-nodemotion/issues"
+  },
+  "homepage": "https://github.com/RandomByte/mqtt-nodemotion#readme",
+  "dependencies": {
+    "omega_gpio": "^0.1.0"
+  }
+}
