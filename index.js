@@ -45,7 +45,7 @@ function motion() {
 		console.log(new Date() + " - State change: motion");
 		// New state: motion
 		// -> publish state change to broker
-		oClient.publish(sTopic, "true", {
+		oClient.publish(sTopic, "1", {
 			qos: 2 // must arrive and must arrive exactly once - also ensures order
 		});
 	} else {
@@ -62,7 +62,7 @@ function resetMotion() {
 	oResetMotionTimeout = null;
 	// New state: no motion
 	// -> publish state change to broker
-	oClient.publish(sTopic, "false", {
+	oClient.publish(sTopic, "0", {
 		qos: 2 // must arrive and must arrive exactly once - also ensures order
 	});
 }
