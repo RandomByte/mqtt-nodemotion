@@ -3,7 +3,7 @@ var gpio = require("omega_gpio"),
 	mqtt = require("mqtt"),
 	oConfig = require("./config.json"),
 
-	iResetMotionTimeout, iHighThreshold = 0, sTopic,
+	oResetMotionTimeout, iHighThreshold = 0, sTopic,
 	oSensor, oClient;
 
 /* Check config */
@@ -29,8 +29,10 @@ process.on('SIGINT', function () {
 
 function checkSensor (){
 	if(oSensor.isPressed()){
-		if (++iHighThreshold === 20) {
+		if (iHighThreshold >= 19) { // 200ms threshold
 			motion();
+		} else {
+			iHighThreshold++;
 		}
 	} else if (iHighThreshold) {
 		iHighThreshold = 0;
@@ -38,7 +40,7 @@ function checkSensor (){
 }
 
 function motion () {
-	if (!iResetMotionTimeout) { // Last state was: no motion
+	if (!oResetMotionTimeout) { // Last state was: no motion
 		console.log(new Date() + " - State change: motion");
 		// New state: motion
 		// -> publish state change to broker
@@ -48,15 +50,15 @@ function motion () {
 	} else {
 		// Last state was already motion
 		// -> reset timeout
-		clearTimeout(iResetMotionTimeout)
+		clearTimeout(oResetMotionTimeout)
 
 	}
-	iResetMotionTimeout = setTimeout(resetMotion, 5000); // 5sec = [200ms (20*10) to reach threshold] + [3sec cooldown (time delay) after going LOW] + [1.5sec of extra time]
+	oResetMotionTimeout = setTimeout(resetMotion, 5000); // 5sec = [200ms (20*10) to reach threshold] + [3sec cooldown (time delay) after going LOW] + [1.5sec of extra time]
 }
 
 function resetMotion () {
 	console.log(new Date() + " - State change: no motion");
-	iResetMotionTimeout = null;
+	oResetMotionTimeout = null;
 	// New state: no motion
 	// -> publish state change to broker
 	oClient.publish(sTopic, "false", {
