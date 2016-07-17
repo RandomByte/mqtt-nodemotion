@@ -45,9 +45,7 @@ function motion() {
 		console.log(new Date() + " - State change: motion");
 		// New state: motion
 		// -> publish state change to broker
-		oClient.publish(sTopic, "1", {
-			qos: 2 // must arrive and must arrive exactly once - also ensures order
-		});
+		publishState("1");
 	} else {
 		// Last state was already motion
 		// -> reset timeout
@@ -62,8 +60,13 @@ function resetMotion() {
 	oResetMotionTimeout = null;
 	// New state: no motion
 	// -> publish state change to broker
-	oClient.publish(sTopic, "0", {
-		qos: 2 // must arrive and must arrive exactly once - also ensures order
+	publishState("0");
+}
+
+function publishState(sState) {
+	oClient.publish(sTopic, sState, {
+		qos: 2, // must arrive and must arrive exactly once - also ensures order
+		retain: true
 	});
 }
 
