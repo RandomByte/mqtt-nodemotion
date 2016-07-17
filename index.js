@@ -3,7 +3,7 @@ var gpio = require("omega_gpio"),
 	mqtt = require("mqtt"),
 	oConfig = require("./config.json"),
 
-	iResetMotionTimeout, sTopic,
+	iResetMotionTimeout, iHighThreshold = 0, sTopic,
 	oSensor, oClient;
 
 /* Check config */
@@ -14,6 +14,9 @@ if (!oConfig.site || !oConfig.room || !oConfig.brokerUrl) {
 
 sTopic = oConfig.site + "/" + oConfig.room + "/Motion";
 oClient = mqtt.connect(oConfig.brokerUrl);
+
+console.log("MQTT Broker URL: " + oConfig.brokerUrl);
+console.log("Topic: " + sTopic);
 
 oSensor = new Button(1);
 
@@ -26,13 +29,17 @@ process.on('SIGINT', function () {
 
 function checkSensor (){
 	if(oSensor.isPressed()){
-		console.log("motion" + new Date().getTime());
-		motion();
+		if (++iHighThreshold === 20) {
+			motion();
+		}
+	} else if (iHighThreshold) {
+		iHighThreshold = 0;
 	}
 }
 
 function motion () {
 	if (!iResetMotionTimeout) { // Last state was: no motion
+		console.log(new Date() + " - State change: motion");
 		// New state: motion
 		// -> publish state change to broker
 		oClient.publish(sTopic, "true", {
@@ -44,10 +51,11 @@ function motion () {
 		clearTimeout(iResetMotionTimeout)
 
 	}
-	iResetMotionTimeout = setTimeout(resetMotion, 5000);	
+	iResetMotionTimeout = setTimeout(resetMotion, 5000); // 5sec = [200ms (20*10) to reach threshold] + [3sec cooldown (time delay) after going LOW] + [1.5sec of extra time]
 }
 
 function resetMotion () {
+	console.log(new Date() + " - State change: no motion");
 	iResetMotionTimeout = null;
 	// New state: no motion
 	// -> publish state change to broker
@@ -58,7 +66,7 @@ function resetMotion () {
 
 
 setInterval(checkSensor, 10);
-
+console.log("Running...");
 
 
 
