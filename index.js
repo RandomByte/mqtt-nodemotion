@@ -1,15 +1,15 @@
-var gpio = require('omega_gpio'),
+var gpio = require("omega_gpio"),
 	Button = gpio.Button,
-	mqtt = require('mqtt'),
-	oConfig = require('./config.json'),
+	mqtt = require("mqtt"),
+	oConfig = require("./config.json"),
 
 	iResetMotionTimeout, sTopic,
 	oSensor, oClient;
 
 /* Check config */
 if (!oConfig.site || !oConfig.room || !oConfig.brokerUrl) {
-	onsole.log("There's something missing in your config.json, please refer to config.example.json for an example");
-    process.exit(1);
+	console.log("There's something missing in your config.json, please refer to config.example.json for an example");
+	process.exit(1);
 }
 
 sTopic = oConfig.site + "/" + oConfig.room + "/Motion";
