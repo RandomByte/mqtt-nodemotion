@@ -1,0 +1,5 @@
+{
+    "site": "Home",
+    "room": "Kitchen",
+    "brokerUrl": "mqtt://test.mosquitto.org"
+}
