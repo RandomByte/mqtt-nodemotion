@@ -1,0 +1,68 @@
+#!/bin/sh /etc/rc.common
+# Example script                               
+# Copyright (C) 2007 OpenWrt.org
+
+START=80
+
+PROJECT_DIR=/root/mqtt-nodemotion
+LOG_PATH=/var/log/mqtt-nodemotion.log
+PID_PATH=/var/run/mqtt-nodemotion.pid
+
+start() {
+    echo "Starting..."
+
+    if pid_file_exists
+    then
+        if is_running
+        then
+            echo "Already running"
+            exit 1
+        else
+            remove_pid_file
+        fi
+    fi
+
+    cd $PROJECT_DIR
+    /usr/bin/node index.js >> $LOG_PATH 2>&1 & echo $! > $PID_PATH
+    echo "Started with pid $(get_pid)"
+}
+
+stop() {
+    if pid_file_exists
+        then
+        if is_running
+        then
+            PID=$(get_pid)
+            echo "Killing process $PID"
+            kill -SIGINT $PID
+        else
+            echo "Already stopped"
+        fi
+        remove_pid_file
+    else
+        echo "Already stopped"
+    fi
+}
+
+restart() {
+    stop
+    start
+}
+
+pid_file_exists() {
+    [ -f "$PID_PATH" ]
+}
+
+get_pid() {
+    echo "$(cat "$PID_PATH")"
+}
+
+is_running() {
+    PID=$(get_pid)
+    ! [ -z "$(ps | grep "$PID" | grep -v grep )" ]
+}
+
+remove_pid_file() {
+    echo "Removing pid file"
+    rm -f "$PID_PATH"
+}
