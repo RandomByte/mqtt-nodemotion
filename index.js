@@ -8,12 +8,12 @@ var gpio = require("omega_gpio"),
 	oSensor, oClient;
 
 /* Check config */
-if (!oConfig.site || !oConfig.room || !oConfig.brokerUrl) {
+if (!oConfig.topic || !oConfig.brokerUrl) {
 	console.log("There's something missing in your config.json, please refer to config.example.json for an example");
 	process.exit(1);
 }
 
-sTopic = oConfig.site + "/" + oConfig.room + "/Motion";
+sTopic = oConfig.topic;
 oClient = mqtt.connect(oConfig.brokerUrl);
 
 console.log("MQTT Broker URL: " + oConfig.brokerUrl);
@@ -51,8 +51,9 @@ function motion() {
 		// -> reset timeout
 		clearTimeout(oResetMotionTimeout);
 	}
-	oResetMotionTimeout = setTimeout(resetMotion, 5000); // 5sec = [200ms (20*10) to reach threshold] + [3sec cooldown
-														// (time delay) after going LOW] + [1.5sec of extra time]
+	// 5sec = [200ms (20*10) to reach threshold] + [3sec cooldown
+	// (time delay) after going LOW] + [1.5sec of extra time]
+	oResetMotionTimeout = setTimeout(resetMotion, 5000);
 }
 
 function resetMotion() {
@@ -65,16 +66,10 @@ function resetMotion() {
 
 function publishState(sState) {
 	oClient.publish(sTopic, sState, {
-		qos: 2, // must arrive and must arrive exactly once - also ensures order
-		retain: true
+		qos: 2 // must arrive and must arrive exactly once - also ensures order
 	});
 }
 
 setInterval(checkSensor, 10);
 console.log("Running...");
-
-
-
-
-
 

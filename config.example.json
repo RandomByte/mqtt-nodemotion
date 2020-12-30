@@ -1,5 +1,4 @@
 {
-    "site": "Home",
-    "room": "Kitchen",
+    "topic": "Home/Motion/Kitchen",
     "brokerUrl": "mqtt://test.mosquitto.org"
 }
