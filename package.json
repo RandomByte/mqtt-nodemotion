@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/RandomByte/mqtt-nodemotion#readme",
   "dependencies": {
-    "mqtt": "^2.18.8",
+    "mqtt": "^4.3.7",
     "omega_gpio": "^0.1.0"
   },
   "devDependencies": {
